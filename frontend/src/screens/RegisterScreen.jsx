@@ -1,11 +1,8 @@
-import { useNavigate,Link} from "react-bootstrap"
-import {useDispatch} from 'react-redux'
+import { useNavigate, Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { useState } from "react";
-import {Form,Row,Col,Button} from 'react-bootstrap'
+import { Form, Row, Col, Button } from "react-bootstrap";
 import FormContainer from "../components/FormContainer";
-
-
-
 
 const RegisterScreen = () => {
   const [name, setName] = useState("");
@@ -19,7 +16,7 @@ const RegisterScreen = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
   };
-
+let isLoading= false
   return (
     <FormContainer>
       <h1>Register</h1>
@@ -79,4 +76,4 @@ const RegisterScreen = () => {
   );
 };
 
-export default RegisterScreen
+export default RegisterScreen;

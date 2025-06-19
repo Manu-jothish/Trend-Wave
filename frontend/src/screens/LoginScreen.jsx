@@ -1,3 +1,4 @@
+import { useState } from "react";
 import FormContainer from "../components/FormContainer";
 import { Form ,Button,Row,Col } from "react-bootstrap";
 import {Link} from "react-router-dom"
@@ -6,6 +7,14 @@ import {Link} from "react-router-dom"
 
 
 function LoginScreen() {
+  
+const [email,setEmail]= useState("")
+const [password,setPassword]=useState("")
+
+
+
+
+
   const submitHandler = () => {};
   return (
     <FormContainer>
