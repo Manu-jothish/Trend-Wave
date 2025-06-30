@@ -3,6 +3,8 @@ import { useDispatch } from "react-redux";
 import { useState } from "react";
 import { Form, Row, Col, Button } from "react-bootstrap";
 import FormContainer from "../components/FormContainer";
+import { useRegisterUserMutation } from "../slices/userApiSlice";
+import { toast } from "react-toastify";
 
 const RegisterScreen = () => {
   const [name, setName] = useState("");
@@ -10,17 +12,30 @@ const RegisterScreen = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [useRegister] = useRegisterUserMutation();
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const submitHandler = async (e) => {
+  const registerHandler = async (e) => {
     e.preventDefault();
+    try {
+      if (password === confirmPassword) {
+        let data = await useRegister({ name, password, email }).unwrap()
+        navigate("/login")
+        toast.success('Registered')
+      } else {
+        toast.error("password is incorrect")
+      }
+    } catch (error) {
+      toast.error()
+    }
   };
-let isLoading= false
+  let isLoading = false;
   return (
     <FormContainer>
       <h1>Register</h1>
-      <Form onSubmit={submitHandler}>
+      <Form onSubmit={registerHandler}>
         <Form.Group className="my-2" controlId="name">
           <Form.Label>Name</Form.Label>
           <Form.Control

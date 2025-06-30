@@ -1,21 +1,31 @@
 import { useState } from "react";
 import FormContainer from "../components/FormContainer";
-import { Form ,Button,Row,Col } from "react-bootstrap";
-import {Link} from "react-router-dom"
-
-
-
+import { Form, Button, Row, Col } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
+import { useLoginUserMutation } from "../slices/userApiSlice";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../slices/authSlice";
+import { toast } from "react-toastify";
 
 function LoginScreen() {
-  
-const [email,setEmail]= useState("")
-const [password,setPassword]=useState("")
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
+  const [loginUser] = useLoginUserMutation();
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-
-
-  const submitHandler = () => {};
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const data = await loginUser({ email, password }).unwrap();
+      await dispatch(setCredentials({ ...data }));
+      navigate("/");
+    } catch (error) {
+      toast.error(error);
+    }
+  };
   return (
     <FormContainer>
       <h1>Sign In</h1>
@@ -55,4 +65,4 @@ const [password,setPassword]=useState("")
   );
 }
 
-export default LoginScreen
+export default LoginScreen;
