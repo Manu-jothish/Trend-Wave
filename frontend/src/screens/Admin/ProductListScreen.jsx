@@ -1,22 +1,30 @@
-import {Row,Col ,Table,Button} from 'react-bootstrap'
-import {FaPlus,FaEdit,FaTrash} from 'react-icons/fa'
-import Loader from '../../components/Loader';
-import Message from '../../components/Message';
-import {useNavigate} from 'react-router-dom'
-
+import { Row, Col, Table, Button } from "react-bootstrap";
+import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import Loader from "../../components/Loader";
+import Message from "../../components/Message";
+import { useNavigate } from "react-router-dom";
+import {
+  useDeleteProductMutation,
+  useGetProductQuery,
+} from "../../slices/productApiSlice";
+import { toast } from "react-toastify";
 
 const ProductListScreen = () => {
+  const { data: products, isLoading, error, refetch } = useGetProductQuery();
 
-    const products=[ ]
-    let isLoading=true
-
-    const deleteHandler=async()=>{
-
+  const [deleteProduct] = useDeleteProductMutation();
+  
+  const deleteHandler = async (productId) => {
+    try {
+      await deleteProduct(productId).unwrap();
+      toast.success("Deleted");
+      refetch();
+    } catch (error) {
+      toast.error(error?.data?.message || error?.mesage);
     }
-   let error 
-   
-   const navigate= useNavigate()
+  };
 
+  const navigate = useNavigate();
 
   return (
     <>
@@ -25,7 +33,10 @@ const ProductListScreen = () => {
           <h1>Products</h1>
         </Col>
         <Col className="text-end">
-          <Button className="btn-sm m-3"  onClick={()=>navigate("/admin/addproduct")}>
+          <Button
+            className="btn-sm m-3"
+            onClick={() => navigate("/admin/addproduct")}
+          >
             <FaPlus /> Create Product
           </Button>
         </Col>
@@ -48,7 +59,7 @@ const ProductListScreen = () => {
               </tr>
             </thead>
             <tbody>
-              {products.map((product) => (
+              {products?.products?.map((product) => (
                 <tr key={product._id}>
                   <td>{product._id}</td>
                   <td>{product.name}</td>
@@ -79,4 +90,4 @@ const ProductListScreen = () => {
   );
 };
 
-export default ProductListScreen
+export default ProductListScreen;
