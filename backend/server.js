@@ -10,7 +10,7 @@ import productRoute from "./routes/productRoute.js"
 
 dotenv.config()
 const app = express()
-connectDb()
+connectDb()  
 
 let port = process.env.PORT
 

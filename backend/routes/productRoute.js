@@ -8,6 +8,7 @@ import {
   deleteProduct,
   getProduct,
   getProductById,
+  createReview
 } from "../controllers/productConroller.js";
 import { protect } from "../middleware/authMiddleware.js";
 
@@ -16,6 +17,8 @@ productRoute
   .post(productParser.single("image"), addProduct)
   .get(getProduct);
 
-productRoute.route("/:id").get(getProductById).delete(protect,deleteProduct)
+productRoute.route("/:id").get(getProductById).delete(protect, deleteProduct);
+
+productRoute.route("/:id/review").post(protect, createReview);
 
 export default productRoute;
