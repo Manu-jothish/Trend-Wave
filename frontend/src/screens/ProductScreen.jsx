@@ -11,33 +11,42 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Rating from "../components/Rating";
 import { useState } from "react";
-
-import { useGetProductByIdQuery,useCreateProductReviewMutation } from "../slices/productApiSlice";
+import {
+  useGetProductByIdQuery,
+  useCreateProductReviewMutation,
+} from "../slices/productApiSlice";
+import { addToCart } from "../slices/cartSlice";
 
 const ProductScreen = () => {
   const { id: productId } = useParams();
-   const { userData } = useSelector((state) => state.auth);
+  const { userData } = useSelector((state) => state.auth);
 
   const [rating, setRating] = useState("");
   const [comment, setComment] = useState("");
   const [qty, setQty] = useState(1);
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const addToCartHandler = () => {
+    dispatch(addToCart({ ...product, qty }));
+    navigate("/cart");
+  };
 
   const {
     data: product,
-    isLoading, 
+    isLoading,
     refetch,
     error,
   } = useGetProductByIdQuery(productId);
 
- const [createReview, { isLoading: loadingProductReview }] =
+  const [createReview, { isLoading: loadingProductReview }] =
     useCreateProductReviewMutation();
 
-
-   const createReviewHandler = async (e) => {
+  const createReviewHandler = async (e) => {
     e.preventDefault();
     try {
       await createReview({
@@ -50,7 +59,7 @@ const ProductScreen = () => {
     } catch (error) {
       toast.error(error?.data?.message || error?.message);
     }
-  }
+  };
 
   return (
     <>
@@ -81,6 +90,7 @@ const ProductScreen = () => {
                   </Col>
                 </Row>
               </ListGroup.Item>
+
               <ListGroup.Item>
                 <Row>
                   <Col>Status:</Col>
@@ -89,11 +99,37 @@ const ProductScreen = () => {
                   </Col>
                 </Row>
               </ListGroup.Item>
+
+              {product?.countInStock > 0 && (
+                <ListGroup.Item>
+                  <Row>
+                    <Col>
+                      <Form.Control
+                        as="select"
+                        value={qty}
+                        onChange={(e) => setQty(e.target.value)}
+                      >
+                        {[...Array(product?.countInStock || 0).keys()]?.map(
+                          (x) => {
+                            return (
+                              <option key={x + 1} value={x + 1}>
+                                {x + 1}
+                              </option>
+                            );
+                          }
+                        )}
+                      </Form.Control>
+                    </Col>
+                  </Row>
+                </ListGroup.Item>
+              )}
+
               <ListGroup.Item>
                 <Button
                   className="btn-block"
                   type="button"
                   disabled={product?.countInStock === 0}
+                  onClick={addToCartHandler}
                 >
                   Add To Cart
                 </Button>

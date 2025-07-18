@@ -25,7 +25,7 @@ const getProduct = asyncHadler(async (req, res) => {
   const pagesize = 4;
   const page = Number(req.query.pageNumber) || 1;
   const keyWordCondition = req.query.keyword
-    ? { name: { $regex: req.query.keyword, $option: "1" } }
+    ? { name: { $regex: req.query.keyword, $option: "i" } }
     : {};
   const count = await Products.countDocuments({ ...keyWordCondition });
   const products = await Products.find({ ...keyWordCondition })
@@ -59,7 +59,6 @@ const deleteProduct = asyncHadler(async (req, res) => {
   }
 });
 
-
 const createReview = asyncHadler(async (req, res) => {
   const { rating, comment } = req.body;
 
@@ -87,7 +86,7 @@ const createReview = asyncHadler(async (req, res) => {
     product.numReviews = product.reviews.length;
 
     product.rating =
-      product.reviews.reduce((acc, item) => item.rating, 0) /
+      product.reviews.reduce((acc, item) => acc + item.rating, 0) /
       product.reviews.length;
 
     const updateProduct = await product.save();
@@ -98,4 +97,4 @@ const createReview = asyncHadler(async (req, res) => {
     throw new Error("Product Not Found");
   }
 });
-export { addProduct, getProduct, getProductById,deleteProduct,createReview };
+export { addProduct, getProduct, getProductById, deleteProduct, createReview };
