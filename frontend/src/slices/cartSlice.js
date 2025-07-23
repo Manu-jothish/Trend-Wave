@@ -1,50 +1,68 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { updateCart } from '../../utils/cartutils'
+import { createSlice } from '@reduxjs/toolkit'
 
-const initialState = localStorage.getItem("cart")
-  ? JSON.parse(localStorage.getItem("cart"))
-  : { cartItems: [] };
 
-const addDecimal = (num) => {
-  return (Math.round(num * 100) / 100).toFixed(2);
-};
+const initialState = localStorage.getItem('cart')
+    ? JSON.parse(localStorage.getItem('cart'))
+    : {
+        cartItems: [],
+        shippingAddress: { address: "", city: "", postalCode: "", country: "" },
+        paymentMethod: ""
+    }
+
 
 const cartSlice = createSlice({
-  name: "cart",
-  initialState,
-  reducers: {
-    addToCart(state, action) {
-      const item = action.payload;
+    name: 'cart',
+    initialState,
+    reducers: {
+        addToCart: (state, action) => {
 
-      const existingItem = state.cartItems.find((x) => x._id === item._id);
+            const item = action.payload
 
-      if (existingItem) {
-        state.cartItem = state.cartItems.map((x) => {
-          return x._id === existingItem._id ? item : x;
-        });
-      } else {
-        state.cartItem = [state.cartItems , item];
-      }
+            const existingItem = state.cartItems.find((x) => x._id == item._id)
 
-      state.itemPrice = addDecimal(
-        state.cartItems.reduce((acc, item) =>  acc + item.price * item.qty),
-        0
-      );
+            if (existingItem) {
+                state.cartItems = state.cartItems.map((x) => {
+                    return x._id === existingItem._id ? item : x
+                })
+            } else {
+                state.cartItems = [...state.cartItems, item]
+            }
 
-      state.shippingPrice = addDecimal(state.itemPrice > 100 ? 100 : 10);
+            return updateCart(state)
 
-      state.taxPrice = addDecimal(Number(0.15 * state.itemPrice));
+        },
+        removeFromCart: (state, action) => {
+            state.cartItems = state.cartItems.filter((x) => x._id !== action.payload)
+            return updateCart(state)
+        },
+        resetCart: (state) => {
+            (state = {
+                cartItems: [],
+                shippingAddress: { address: "", city: "", postalCode: "", country: "" },
+                paymentMethod: ""
+            })
+        },
+        saveShippingAddress: (state, action) => {
+            state.shippingAddress = action.payload
+            localStorage.setItem('cart', JSON.stringify(state))
+        },
+        savePaymentMethod: (state, action) => {
+            state.paymentMethod = action.payload
+            localStorage.setItem('cart', JSON.stringify(state))
+        },
+        clearCartItems: (state, action) => {
+            state.cartItems = []
+            return updateCart(state)
+        }
+    }
+})
 
-      state.totalPrice = (
-        Number(state.itemPrice) +
-        Number(state.shippingPrice) +
-        Number(state.taxPrice)
-      ).toFixed(2);
+export const { addToCart,
+    clearCartItems,
+    removeFromCart,
+    resetCart,
+    savePaymentMethod,
+    saveShippingAddress } = cartSlice.actions
 
-      localStorage.setItem("cart", JSON.stringify(state));
-    },
-  },
-});
-
-export const { addToCart } = cartSlice.actions;
-
-export default cartSlice.reducer;
+export default cartSlice.reducer

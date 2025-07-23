@@ -5,8 +5,10 @@ import { useSelector, useDispatch } from "react-redux";
 
 const Header = () => {
   const { userData } = useSelector((state) => state.auth);
-
-  const cartItems = [];
+  
+  const {cartItems}=useSelector((state)=>state.cart)
+  console.log(cartItems);
+  
 
   const logoutHandler = async () => {};
 

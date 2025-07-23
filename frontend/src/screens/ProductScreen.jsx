@@ -63,7 +63,7 @@ const ProductScreen = () => {
 
   return (
     <>
-      <Link to="/" className="btn btn-light my-3">
+     <Link to="/" className="btn btn-light my-3">
         Go Back
       </Link>
       <Row>
@@ -109,15 +109,13 @@ const ProductScreen = () => {
                         value={qty}
                         onChange={(e) => setQty(e.target.value)}
                       >
-                        {[...Array(product?.countInStock || 0).keys()]?.map(
-                          (x) => {
-                            return (
-                              <option key={x + 1} value={x + 1}>
-                                {x + 1}
-                              </option>
-                            );
-                          }
-                        )}
+                        {[...Array(product?.countInStock).keys()].map((X) => {
+                          return (
+                            <option key={X + 1} value={X + 1}>
+                              {X + 1}
+                            </option>
+                          );
+                        })}
                       </Form.Control>
                     </Col>
                   </Row>
@@ -129,11 +127,12 @@ const ProductScreen = () => {
                   className="btn-block"
                   type="button"
                   disabled={product?.countInStock === 0}
-                  onClick={addToCartHandler}
+                  onClick={() => addToCartHandler()}
                 >
                   Add To Cart
                 </Button>
               </ListGroup.Item>
+
             </ListGroup>
           </Card>
         </Col>
@@ -181,7 +180,15 @@ const ProductScreen = () => {
                       required
                       value={comment}
                       onChange={(e) => setComment(e.target.value)}
-                    ></Form.Control>
+                    >
+                      {[...Array(product?.countInStock).keys()].map((X) => {
+                        return (
+                          <option key={X + 1} value={X + 1}>
+                            {X + 1}
+                          </option>
+                        );
+                      })}
+                    </Form.Control>
                   </Form.Group>
                   <Button
                     disabled={loadingProductReview}
